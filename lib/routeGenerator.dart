@@ -25,10 +25,8 @@ class RouteGenerator {
         break;
       case '/account':
         return MaterialPageRoute(
-            builder: (_) => BlocProvider<ClientBloc>(
-                  create: (context) => _clientBloc,
-                  child: LoginPage(),
-                ));
+            builder: (context) {return context.bloc<ClientBloc>().state is UnLoggedState? LoginPage():CatalogWidget();}
+        );
         //in caso di errore ritorniamo all'homepage
         return MaterialPageRoute(builder: (_) => CatalogWidget());
       default:

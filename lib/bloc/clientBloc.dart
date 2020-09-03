@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'package:flutter_app/models/client.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 abstract class ClientState {
   Cliente c;
 }
 
 class UnLoggedState extends ClientState {
+  bool error = false;
   UnLoggedState() {
     c = Cliente(0, 'Guest', 'Guest', "guest");
   }
@@ -32,19 +34,20 @@ class ClientBloc extends Bloc<LoginEvent, ClientState> {
   @override
   Stream<ClientState> mapEventToState(LoginEvent event) async* {
     if (event is LoginEvent) {
-      try {
-        Cliente user = await _login(event.nome);
-        yield LoggedState(user);
-      } catch (error) {
-        yield state as UnLoggedState;
-      }
+        ClientState user = await _login(event.nome);
+        yield user;
     }
   }
 
-  Future<Cliente> _login(String nome) async {
+  Future<ClientState> _login(String nome) async {
     var url = Uri.http('192.168.0.9:8080', '/user', {'user': nome});
-    String body = (await http.get(url)).body;
-    print(body);
-    return Cliente.fromJson(json.decode(body).cast<Map<String, dynamic>>());
+    Response response = await http.get(url);
+    if(response.statusCode >= 400) {
+      return (state as UnLoggedState)..error = true;
+    }
+    print(response.body);
+    Cliente c = Cliente.fromJson(json.decode(response.body));
+    return LoggedState(c);
   }
+
 }

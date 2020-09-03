@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/bloc/clientBloc.dart';
 import 'package:flutter_app/models/pacchettiVacanza.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+@JsonSerializable()
 class Cliente {
   int id;
   String nome, cognome, email, username, recapito;
@@ -62,29 +64,36 @@ class LoginPage extends StatelessWidget {
       ),
       body: Align(
         alignment: const Alignment(0, -1 / 2),
-        child: BlocBuilder<ClientBloc, ClientState>(builder: (context, state) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: textEditingController,
-                onChanged: (username) => {},
-                decoration: InputDecoration(
-                  labelText: 'username',
-                  errorText: (true) ? 'username non valido' : null,
-                ),
-              ),
-              const Padding(padding: EdgeInsets.all(1)),
-              RaisedButton(
-                  child: const Text('Login'),
-                  onPressed: () {
-                    context
-                        .bloc<ClientBloc>()
-                        .add(LoginEvent(textEditingController.text));
-                  }),
-            ],
-          );
-        }),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            BlocBuilder<ClientBloc, ClientState>(
+                buildWhen: (previous, current) => previous == current,
+                builder: (context, state) {
+                  return TextField(
+                    controller: textEditingController,
+                    decoration: InputDecoration(
+                      labelText: 'username',
+                      errorText: ((state as UnLoggedState).error)
+                          ? 'username non valido'
+                          : null,
+                    ),
+                  );
+                }),
+            const Padding(padding: EdgeInsets.all(1)),
+            RaisedButton(
+                child: const Text('Login'),
+                onPressed: () {
+                  // ignore: close_sinks
+                  var bloc = BlocProvider.of<ClientBloc>(context);
+                  bloc.add(LoginEvent(textEditingController.text));
+                  bloc.listen((c) {
+                    if (c is LoggedState)
+                      Navigator.of(context).popAndPushNamed('/account');
+                  });
+                }),
+          ],
+        ),
       ),
     );
   }

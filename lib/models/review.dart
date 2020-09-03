@@ -3,11 +3,14 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/bloc/blocRecensione.dart';
+import 'package:flutter_app/bloc/clientBloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-
+import 'package:json_annotation/json_annotation.dart';
 import 'client.dart';
+
+@JsonSerializable()
 
 class RecensionePK {
   int cliente;
@@ -16,10 +19,11 @@ class RecensionePK {
 
   RecensionePK(this.cliente, this.localita, this.data);
 
-  RecensionePK.fromJson(Map<String, dynamic> json) {
-    cliente = json['cliente'] as int;
-    localita = json['localita'] as String;
-    data = DateTime.fromMillisecondsSinceEpoch(json['data']);
+  factory RecensionePK.fromJson(Map<String, dynamic> json) {
+    int cliente = json['cliente'] as int;
+    String localita = json['localita'] as String;
+    DateTime data = DateTime.fromMillisecondsSinceEpoch(json['data']);
+    return RecensionePK(cliente, localita, data);
   }
 }
 
@@ -87,7 +91,7 @@ class _RecensioneWDState extends State<RecensioneWD> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
+        if(context.bloc<ClientBloc>().state is LoggedState)...[Container(
           child: TextField(
             controller: textEditingController,
             decoration: InputDecoration(
@@ -95,8 +99,6 @@ class _RecensioneWDState extends State<RecensioneWD> {
               border: OutlineInputBorder(),
             ),
             scrollController: ScrollController(),
-            enabled: true,
-            //TODO INSERISCI IL CONTROLLO SUL LOGIN,
             maxLines: 4,
           ),
           padding: EdgeInsets.all(10),
@@ -115,7 +117,7 @@ class _RecensioneWDState extends State<RecensioneWD> {
             "Invia",
             style: TextStyle(fontSize: 20.0),
           ),
-        ),
+        )],
         ConstrainedBox(
           constraints: BoxConstraints(
             maxHeight: 300.0,

@@ -1,6 +1,9 @@
 import 'package:flutter_app/models/review.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+
 class RecensioneBloc extends Bloc<RecensioneEvent, RecensioneState> {
   RecensioneBloc(String localita) : super(RecensioneState(localita));
   RecensioneProvider _provider = RecensioneProvider();
@@ -18,6 +21,12 @@ class RecensioneBloc extends Bloc<RecensioneEvent, RecensioneState> {
       }
     }
   }
+
+  Future<Response> addRec(Recensione r) async {
+    var url = Uri.http('192.168.0.9:8080', '/review');
+    return http.post(url,body: null);
+  }
+
 }
 
 class RecensioneState {
@@ -41,6 +50,4 @@ class AddEvent extends RecensioneEvent {
   Recensione r;
 
   AddEvent(this.r);
-
-  Future<List<Recensione>> add() async {}
 }
