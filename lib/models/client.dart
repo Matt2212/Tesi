@@ -19,16 +19,20 @@ class Cliente {
     email = json['email'];
     username = json['username'];
     recapito = json['recapito'];
+    acquisti = List<Map<String, dynamic>>.from(json['acquisti'])
+        .map((e) => Acquisto.fromJson(e))
+        .toList();
   }
 
-  Map<String, dynamic> toJson() => {
-    'id' : id,
-    'nome' : nome,
-    'cognome' : cognome,
-    'email' : email,
-    'username' : username,
-    'recapito' : recapito
-  };
+  Map<String, dynamic> toJson() =>
+      {
+        'id': id,
+        'nome': nome,
+        'cognome': cognome,
+        'email': email,
+        'username': username,
+        'recapito': recapito,
+      };
 }
 
 class Acquisto {
@@ -41,9 +45,9 @@ class Acquisto {
     id = json['id'];
     acquirente = json['acquirente'];
     data = DateTime.fromMillisecondsSinceEpoch(json['data']);
-    prenotazioni = json['prenotazioni']
-        .map<dynamic>((json) => DettaglioPrenotazione.fromJson(json))
-        .toList();
+    prenotazioni =
+        List<Map<String, dynamic>>.from(json['prenotazioni']).map((e) =>
+            DettaglioPrenotazione.fromJson(e)).toList();
   }
 }
 
@@ -58,7 +62,7 @@ class DettaglioPrenotazione {
     id = json['id'];
     acquisto = json['acquisto'];
     postiPrenotati = json['postiPrenotati'];
-    pacchettoVacanza = PacchettoVacanza.fromJson(json[pacchettoVacanza]);
+    pacchettoVacanza = PacchettoVacanza.fromJson(json['pacchettoVacanza']);
   }
 }
 
