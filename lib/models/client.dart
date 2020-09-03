@@ -18,8 +18,17 @@ class Cliente {
     cognome = json['cognome'];
     email = json['email'];
     username = json['username'];
-    recapito = json['password'];
+    recapito = json['recapito'];
   }
+
+  Map<String, dynamic> toJson() => {
+    'id' : id,
+    'nome' : nome,
+    'cognome' : cognome,
+    'email' : email,
+    'username' : username,
+    'recapito' : recapito
+  };
 }
 
 class Acquisto {

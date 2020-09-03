@@ -6,6 +6,8 @@ import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
+import 'localita.dart';
+
 class PacchettoVacanzaPK {
   DateTime dataPartenza;
   String localita;
@@ -67,14 +69,14 @@ List<dynamic> parsePacchetto(String responseBody) {
 }
 
 class PacchettoVacanzaWd extends StatelessWidget {
-  final String _localita;
+  final Localita _localita;
 
   PacchettoVacanzaWd(this._localita);
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: PacchettoVacanzaProvider(_localita).pacchetti(),
+      future: PacchettoVacanzaProvider(_localita.nome).pacchetti(),
       builder: (context, snapshoot) {
         if (snapshoot.connectionState == ConnectionState.done)
           return ConstrainedBox(
@@ -102,7 +104,7 @@ class PacchettoVacanzaWd extends StatelessWidget {
                             Center(
                                 child:
                                     Text('Posti disponibili ${pv.postiDisp}')),
-                            Prenotazione(pv.postiDisp)
+                            LimitedCounter(pv.postiDisp)
                           ],
                         ),
                       );
@@ -131,20 +133,22 @@ class PacchettoVacanzaWd extends StatelessWidget {
   }
 }
 
-class Prenotazione extends StatefulWidget {
-  final posti;
+class LimitedCounter extends StatefulWidget {
+  final max;
 
-  Prenotazione(this.posti);
+  LimitedCounter(this.max);
 
   @override
-  _PrenotazioneState createState() => _PrenotazioneState(posti);
+  _LimitedCounterState createState() => _LimitedCounterState(max);
 }
 
-class _PrenotazioneState extends State<Prenotazione> {
+class _LimitedCounterState extends State<LimitedCounter> {
   int _counter = 0;
-  int posti;
+  final int max;
 
-  _PrenotazioneState(this.posti);
+  int get counter => _counter;
+
+  _LimitedCounterState(this.max);
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +161,7 @@ class _PrenotazioneState extends State<Prenotazione> {
                 Icons.add,
               ),
               onPressed: () {
-                if (_counter < posti) _counter++;
+                if (_counter < max) _counter++;
                 setState(() {});
               },
             ),
@@ -179,7 +183,7 @@ class _PrenotazioneState extends State<Prenotazione> {
             ),
           ],
         ),
-        SimpleDialogOption(
+        FlatButton(
           onPressed: () {
             Navigator.pop(context, _counter);
           },

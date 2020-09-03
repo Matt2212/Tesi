@@ -28,6 +28,7 @@ dependencies:
   flutter_bloc: ^6.0.4
   bloc: ^6.0.0
   json_annotation: ^3.0.0
+  sprintf: "^4.0.0"
 
 
 

@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_app/models/localita.dart';
 import 'package:flutter_app/models/pacchettiVacanza.dart';
 import 'package:flutter_app/models/review.dart';
+import 'package:sprintf/sprintf.dart';
 
 class LocalitaPage extends StatelessWidget {
   final Localita localita;
@@ -34,7 +35,7 @@ class LocalitaPage extends StatelessWidget {
               ),
               Padding(
                 child: Text(
-                  'Valutazione media:',
+                  sprintf('Valutazione media: %1.2f',[localita.valutazioneMedia]).toString(),
                   style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                 ),
                 padding: EdgeInsets.all(10),
@@ -46,8 +47,8 @@ class LocalitaPage extends StatelessWidget {
                 ),
                 padding: EdgeInsets.all(10),
               ),
-              PacchettoVacanzaWd(localita.nome),
-              RecensioneWD(localita.nome),
+              PacchettoVacanzaWd(localita),
+              RecensioneWD(localita),
             ]),
           )
         ],

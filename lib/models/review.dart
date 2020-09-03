@@ -4,27 +4,37 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/bloc/blocRecensione.dart';
 import 'package:flutter_app/bloc/clientBloc.dart';
+import 'package:flutter_app/models/pacchettiVacanza.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:json_annotation/json_annotation.dart';
+
 import 'client.dart';
+import 'localita.dart';
 
 @JsonSerializable()
-
 class RecensionePK {
   int cliente;
   String localita;
   DateTime data;
 
-  RecensionePK(this.cliente, this.localita, this.data);
+  RecensionePK();
+
+  RecensionePK.complete(this.cliente, this.localita, this.data);
 
   factory RecensionePK.fromJson(Map<String, dynamic> json) {
     int cliente = json['cliente'] as int;
     String localita = json['localita'] as String;
     DateTime data = DateTime.fromMillisecondsSinceEpoch(json['data']);
-    return RecensionePK(cliente, localita, data);
+    return RecensionePK.complete(cliente, localita, data);
   }
+
+  Map<String, dynamic> toJson() => {
+    'cliente' : cliente,
+    'localita' : localita,
+    'data' : data.millisecond
+  };
 }
 
 class Recensione {
@@ -42,10 +52,18 @@ class Recensione {
 
   Recensione(
       String localita, this.valutazione, this.descrizione, this.cliente) {
+    id = RecensionePK();
     id.data = DateTime.now();
     id.cliente = cliente.id;
     id.localita = localita;
   }
+
+  Map<String, dynamic> toJson() => {
+    'id' : id.toJson(),
+    'cliente' : cliente.toJson(),
+    'valutazione' : valutazione,
+    'descrizione' : descrizione,
+  };
 
   @override
   String toString() {
@@ -80,44 +98,82 @@ class _RecensioneWDState extends State<RecensioneWD> {
   final TextEditingController textEditingController = TextEditingController();
 
   RecensioneBloc recensioneBloc;
-  String localita;
+  Localita localita;
+
+  int _counter = 0;
 
   _RecensioneWDState(this.localita) {
-    recensioneBloc = RecensioneBloc(localita);
-    recensioneBloc.add(SearchEvent(localita));
+    recensioneBloc = RecensioneBloc(localita.nome);
+    recensioneBloc.add(SearchEvent(localita.nome));
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if(context.bloc<ClientBloc>().state is LoggedState)...[Container(
-          child: TextField(
-            controller: textEditingController,
-            decoration: InputDecoration(
-              hintText: 'Inserisci un commento',
-              border: OutlineInputBorder(),
+        if (context.bloc<ClientBloc>().state is LoggedState) ...[
+          Row(
+            children: [
+              FlatButton(
+                child: Icon(
+                  Icons.add,
+                ),
+                onPressed: () {
+                  if (_counter < 5) _counter++;
+                  setState(() {});
+                },
+              ),
+              Expanded(
+                  child: Text(
+                '$_counter',
+                textAlign: TextAlign.center,
+              )),
+              FlatButton(
+                child: Icon(
+                  Icons.remove,
+                ),
+                onPressed: () {
+                  if (_counter > 0) {
+                    _counter--;
+                    setState(() {});
+                  }
+                },
+              ),
+            ],
+          ),
+          Container(
+            child: TextField(
+              controller: textEditingController,
+              decoration: InputDecoration(
+                hintText: 'Inserisci un commento',
+                border: OutlineInputBorder(),
+              ),
+              scrollController: ScrollController(),
+              maxLines: 4,
             ),
-            scrollController: ScrollController(),
-            maxLines: 4,
+            padding: EdgeInsets.all(10),
           ),
-          padding: EdgeInsets.all(10),
-        ),
-        RaisedButton(
-          color: Colors.deepOrange,
-          textColor: Colors.white,
-          disabledColor: Colors.grey,
-          disabledTextColor: Colors.black,
-          padding: EdgeInsets.all(8.0),
-          onPressed: () {
-            Scaffold.of(context)
-                .showSnackBar(SnackBar(content: Text('Commento inviato')));
-          },
-          child: Text(
-            "Invia",
-            style: TextStyle(fontSize: 20.0),
-          ),
-        )],
+          RaisedButton(
+            color: Colors.deepOrange,
+            textColor: Colors.white,
+            disabledColor: Colors.grey,
+            disabledTextColor: Colors.black,
+            padding: EdgeInsets.all(8.0),
+            onPressed: () {
+              //TODO implemeneta invio
+              var bloc = context.bloc<ClientBloc>();
+              Recensione r = Recensione(localita.nome, _counter, textEditingController.text, bloc.state.c);
+              recensioneBloc.add(AddEvent(r));
+              String result = recensioneBloc.state.added? 'Commento aggiunto con successo' : 'commento non aggiunto';
+                Scaffold.of(context).showSnackBar(SnackBar(content: Text(result)));
+
+            },
+            child: Text(
+              "Invia",
+              style: TextStyle(fontSize: 20.0),
+            ),
+          )
+        ],
         ConstrainedBox(
           constraints: BoxConstraints(
             maxHeight: 300.0,
@@ -125,6 +181,7 @@ class _RecensioneWDState extends State<RecensioneWD> {
           ),
           child: BlocBuilder<RecensioneBloc, RecensioneState>(
             cubit: recensioneBloc,
+            buildWhen: (previous, current) => previous.recensioni.length != current.recensioni.length,
             builder: (BuildContext context, state) => ListView.separated(
               itemBuilder: (context, index) {
                 Recensione r = state.recensioni[index];
