@@ -34,6 +34,13 @@ class LocalitaPage extends StatelessWidget {
               ),
               Padding(
                 child: Text(
+                  'Valutazione media:',
+                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                ),
+                padding: EdgeInsets.all(10),
+              ),
+              Padding(
+                child: Text(
                   'Pacchetti vacanza disponibili:',
                   style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
                 ),

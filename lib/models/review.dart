@@ -69,17 +69,18 @@ class RecensioneWD extends StatefulWidget {
   RecensioneWD(this.localita);
 
   @override
-  _RecensioneWDState createState() => _RecensioneWDState();
+  _RecensioneWDState createState() => _RecensioneWDState(localita);
 }
 
 class _RecensioneWDState extends State<RecensioneWD> {
   final TextEditingController textEditingController = TextEditingController();
 
   RecensioneBloc recensioneBloc;
+  String localita;
 
-  _RecensioneWDState() {
-    recensioneBloc = RecensioneBloc(widget.localita);
-    recensioneBloc.add(SearchEvent(widget.localita));
+  _RecensioneWDState(this.localita) {
+    recensioneBloc = RecensioneBloc(localita);
+    recensioneBloc.add(SearchEvent(localita));
   }
 
   @override
