@@ -4,10 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/bloc/blocRecensione.dart';
 import 'package:flutter_app/bloc/clientBloc.dart';
-import 'package:flutter_app/models/pacchettiVacanza.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'client.dart';
@@ -30,11 +30,8 @@ class RecensionePK {
     return RecensionePK.complete(cliente, localita, data);
   }
 
-  Map<String, dynamic> toJson() => {
-    'cliente' : cliente,
-    'localita' : localita,
-    'data' : data.millisecond
-  };
+  Map<String, dynamic> toJson() =>
+      {'cliente': cliente, 'localita': localita, 'data': data.millisecond};
 }
 
 class Recensione {
@@ -59,11 +56,11 @@ class Recensione {
   }
 
   Map<String, dynamic> toJson() => {
-    'id' : id.toJson(),
-    'cliente' : cliente.toJson(),
-    'valutazione' : valutazione,
-    'descrizione' : descrizione,
-  };
+        'id': id.toJson(),
+        'cliente': cliente.toJson(),
+        'valutazione': valutazione,
+        'descrizione': descrizione,
+      };
 
   @override
   String toString() {
@@ -109,100 +106,107 @@ class _RecensioneWDState extends State<RecensioneWD> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        if (context.bloc<ClientBloc>().state is LoggedState) ...[
-          Row(
-            children: [
-              FlatButton(
-                child: Icon(
-                  Icons.add,
-                ),
-                onPressed: () {
-                  if (_counter < 5) _counter++;
-                  setState(() {});
-                },
-              ),
-              Expanded(
-                  child: Text(
-                '$_counter',
-                textAlign: TextAlign.center,
-              )),
-              FlatButton(
-                child: Icon(
-                  Icons.remove,
-                ),
-                onPressed: () {
-                  if (_counter > 0) {
-                    _counter--;
+    return BlocProvider(
+      create: (_) => recensioneBloc,
+      child: Column(
+        children: [
+          if (context
+              .bloc<ClientBloc>()
+              .state is LoggedState) ...[
+            Row(
+              children: [
+                FlatButton(
+                  child: Icon(
+                    Icons.add,
+                  ),
+                  onPressed: () {
+                    if (_counter < 5) _counter++;
                     setState(() {});
-                  }
-                },
-              ),
-            ],
-          ),
-          Container(
-            child: TextField(
-              controller: textEditingController,
-              decoration: InputDecoration(
-                hintText: 'Inserisci un commento',
-                border: OutlineInputBorder(),
-              ),
-              scrollController: ScrollController(),
-              maxLines: 4,
+                  },
+                ),
+                Expanded(
+                    child: Text(
+                      '$_counter',
+                      textAlign: TextAlign.center,
+                    )),
+                FlatButton(
+                  child: Icon(
+                    Icons.remove,
+                  ),
+                  onPressed: () {
+                    if (_counter > 0) {
+                      _counter--;
+                      setState(() {});
+                    }
+                  },
+                ),
+              ],
             ),
-            padding: EdgeInsets.all(10),
-          ),
-          RaisedButton(
-            color: Colors.deepOrange,
-            textColor: Colors.white,
-            disabledColor: Colors.grey,
-            disabledTextColor: Colors.black,
-            padding: EdgeInsets.all(8.0),
-            onPressed: () {
-              //TODO implemeneta invio
-              var bloc = context.bloc<ClientBloc>();
-              Recensione r = Recensione(localita.nome, _counter, textEditingController.text, bloc.state.c);
-              recensioneBloc.add(AddEvent(r));
-              String result = recensioneBloc.state.added? 'Commento aggiunto con successo' : 'commento non aggiunto';
-                Scaffold.of(context).showSnackBar(SnackBar(content: Text(result)));
-
-            },
-            child: Text(
-              "Invia",
-              style: TextStyle(fontSize: 20.0),
+            Container(
+              child: TextField(
+                controller: textEditingController,
+                decoration: InputDecoration(
+                  hintText: 'Inserisci un commento',
+                  border: OutlineInputBorder(),
+                ),
+                scrollController: ScrollController(),
+                maxLines: 4,
+              ),
+              padding: EdgeInsets.all(10),
             ),
-          )
-        ],
-        ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: 300.0,
-            minHeight: 100.0,
-          ),
-          child: BlocBuilder<RecensioneBloc, RecensioneState>(
-            cubit: recensioneBloc,
-            buildWhen: (previous, current) => previous.recensioni.length != current.recensioni.length,
-            builder: (BuildContext context, state) => ListView.separated(
-              itemBuilder: (context, index) {
-                Recensione r = state.recensioni[index];
-                return ExpansionTile(
-                  title: Text('${r.cliente.nome} ${r.cliente.cognome}',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text('valutazione: ${r.valutazione}'),
-                  children: [
-                    Text(r.descrizione, style: TextStyle(fontSize: 16)),
-                  ],
-                );
+            RaisedButton(
+              color: Colors.deepOrange,
+              textColor: Colors.white,
+              disabledColor: Colors.grey,
+              disabledTextColor: Colors.black,
+              padding: EdgeInsets.all(8.0),
+              onPressed: () async {
+                var bloc = context.bloc<ClientBloc>();
+                Recensione r = Recensione(localita.nome, _counter,
+                    textEditingController.text, bloc.state.c);
+                recensioneBloc.add(AddEvent(r));
               },
-              separatorBuilder: (context, index) => Divider(
-                color: Colors.black,
+              child: Text(
+                "Invia",
+                style: TextStyle(fontSize: 20.0),
               ),
-              itemCount: state.recensioni.length,
-              shrinkWrap: true,
+            )
+          ] else
+            Padding(padding: EdgeInsets.all(10)),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: 300.0,
+              minHeight: 100.0,
+            ),
+            child: BlocBuilder<RecensioneBloc, RecensioneState>(
+              builder: (BuildContext context, state) =>
+                  SafeArea(
+                    child: ListView.separated(
+                      itemBuilder: (context, index) {
+                        Recensione r = state.recensioni[index];
+                        return ExpansionTile(
+                          title: Text('${r.cliente.nome} ${r.cliente.cognome}',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          subtitle: Text(
+                              '${DateFormat('d/M/yyyy, HH:mm').format(
+                                  r.id.data)}\nvalutazione: ${r.valutazione}'),
+                          children: [
+                            Text(r.descrizione, style: TextStyle(fontSize: 16)),
+                          ],
+                        );
+                      },
+                      separatorBuilder: (context, index) =>
+                          Divider(
+                            color: Colors.black,
+                          ),
+                      itemCount: state.recensioni.length,
+                      shrinkWrap: true,
+                    ),
+                  ),
             ),
           ),
-        )
-      ],
+        ],
+      ),
     );
   }
 }

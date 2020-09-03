@@ -14,18 +14,18 @@ class RecensioneBloc extends Bloc<RecensioneEvent, RecensioneState> {
     final currentState = state;
     if (event is SearchEvent) {
       SearchEvent search = event;
-      List<dynamic> r = await _provider.search(event.localita);
-      yield state.._recensioni = r;
-    }
-    if (event is AddEvent) {
+      List<dynamic> r = (await _provider.search(event.localita));
+      yield state..recensioni = r;
+    } else if (event is AddEvent) {
       Response response = await addRec(event.r);
       if (response.statusCode >= 400) {
-        yield state..added = false;
-      }
-      else {
-        print(response.statusCode);
-        state.recensioni.add(event.r);
-        yield state..added = true;
+        yield RecensioneState(state.localita, false)
+          ..recensioni = List<dynamic>.from(state.recensioni);
+      } else {
+        state.recensioni.insert(0, event.r);
+        yield RecensioneState(state.localita, true)
+          ..recensioni = List<dynamic>.from(state.recensioni);
+        ;
       }
     }
   }
@@ -42,13 +42,11 @@ class RecensioneBloc extends Bloc<RecensioneEvent, RecensioneState> {
 }
 
 class RecensioneState {
-  List<dynamic> _recensioni = [];
+  List<dynamic> recensioni = [];
   String localita;
   bool added = false;
 
-  List<Recensione> get recensioni => new List.from(_recensioni);
-
-  RecensioneState(this.localita);
+  RecensioneState(this.localita, [this.added]);
 }
 
 abstract class RecensioneEvent {}
