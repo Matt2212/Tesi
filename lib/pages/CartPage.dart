@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_app/bloc/cartBloc.dart';
+import 'package:flutter_app/bloc/clientBloc.dart';
 import 'package:flutter_app/models/client.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -7,15 +9,15 @@ import 'package:sprintf/sprintf.dart';
 
 class CartPage extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext contesto) {
+    CartBloc bloc = contesto.bloc<CartBloc>();
     return Scaffold(
       appBar: AppBar(
         title: Text('Carrello'),
       ),
       body: BlocBuilder<CartBloc, CartState>(
         builder: (BuildContext context, state) {
-          var bloc = context.bloc<CartBloc>();
-          List<DettaglioPrenotazione> prenotazioni = bloc.state.a.prenotazioni;
+          List<DettaglioPrenotazione> prenotazioni = state.a.prenotazioni;
           return (prenotazioni.isEmpty)
               ? Center(child: Text('Carrello vuoto'))
               : ListView.separated(
@@ -91,9 +93,48 @@ class CartPage extends StatelessWidget {
       ),
       bottomNavigationBar: BottomAppBar(
         child: Container(
-          height: 50.0,
-          child: Text('hi'),
-        ),
+            height: 70.0,
+            child: BlocBuilder<CartBloc, CartState>(
+                builder: (that, statex) =>
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              sprintf(
+                                  'Totale: %1.2f €', [statex.a.prezzoTotale]),
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),),
+                          BlocBuilder<ClientBloc, ClientState>(
+                            buildWhen: (previous, next) => next is LoggedState,
+                            builder: (contextz, state) =>
+                                RaisedButton(
+                                  onPressed: () {
+                                    bloc.add(BuyCart());
+                                    bloc.listen((statey) {
+                                      Scaffold.of(that).showSnackBar(
+                                          SnackBar(
+                                              content: Text(
+                                                  (statey.a.prenotazioni
+                                                      .isEmpty)
+                                                      ?
+                                                  'Acquisto effettuato con successo!'
+                                                      :
+                                                  'Qualcosa è andato storto, non è stato possibile effettuare l\'acquisto')
+                                          )
+                                      );
+                                    });
+                                  },
+                                  child: Text('Acquista'),
+                                  color: Colors.deepOrange,
+                                ),
+                          )
+                        ],
+                      ),
+                    ))),
       ),
     );
   }

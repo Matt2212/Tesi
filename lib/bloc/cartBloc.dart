@@ -53,8 +53,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     if (event is GetCart) {
       var url = Uri.http('192.168.0.9:8080', '/cart');
       state.a = Acquisto.fromJson(json.decode((await http.get(url)).body));
-    }
-    if (event is SaveCart) {
+    } else if (event is SaveCart) {
       await saveCart();
       yield CartState(state.a);
     } else if (event is BuyCart) {
@@ -66,6 +65,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
           'Content-Type': 'application/json;charset=UTF-8',
         },
       );
+      print(r.body);
       yield CartState(Acquisto.fromJson(json.decode(r.body)));
     } else if (event is PutCart) {
       PacchettoVacanza pv = event.pv;
