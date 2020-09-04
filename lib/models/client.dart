@@ -1,10 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app/bloc/clientBloc.dart';
 import 'package:flutter_app/models/pacchettiVacanza.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:json_annotation/json_annotation.dart';
 
-@JsonSerializable()
 class Cliente {
   int id;
   String nome, cognome, email, username, recapito;
@@ -25,13 +25,13 @@ class Cliente {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'nome': nome,
-        'cognome': cognome,
-        'email': email,
-        'userName': username,
-        'recapito': recapito,
-      };
+    'id': id,
+    'nome': nome,
+    'cognome': cognome,
+    'email': email,
+    'userName': username,
+    'recapito': recapito,
+  };
 }
 
 class Acquisto {
@@ -43,19 +43,31 @@ class Acquisto {
   Acquisto.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     acquirente = json['acquirente'];
-    data = DateTime.fromMillisecondsSinceEpoch(json['data']);
+    data = json['data'] == null
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(json['data']);
+    prezzoTotale = json['prezzoTotale'];
     prenotazioni = List<Map<String, dynamic>>.from(json['prenotazioni'])
         .map((e) => DettaglioPrenotazione.fromJson(e))
         .toList();
   }
+
+  Map<String, dynamic> toJson() =>
+      {
+        'id': id,
+        'acquirente': acquirente,
+        'data': data == null ? null : data.millisecondsSinceEpoch,
+        'prezzoTotale': prezzoTotale,
+        'prenotazioni': json.encode(prenotazioni)
+      };
 }
 
 class DettaglioPrenotazione {
   int id, acquisto, postiPrenotati;
   PacchettoVacanza pacchettoVacanza;
 
-  DettaglioPrenotazione(
-      this.id, this.acquisto, this.postiPrenotati, this.pacchettoVacanza);
+  DettaglioPrenotazione(this.id, this.acquisto, this.postiPrenotati,
+      this.pacchettoVacanza);
 
   DettaglioPrenotazione.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -63,6 +75,14 @@ class DettaglioPrenotazione {
     postiPrenotati = json['postiPrenotati'];
     pacchettoVacanza = PacchettoVacanza.fromJson(json['pacchettoVacanza']);
   }
+
+  Map<String, dynamic> toJson() =>
+      {
+        'id': id,
+        'acquisto': acquisto,
+        'postiPrenotati': postiPrenotati,
+        'pacchettoVacanza': pacchettoVacanza.toJson()
+      };
 }
 
 class LoginPage extends StatelessWidget {

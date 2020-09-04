@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/bloc/cartBloc.dart';
 import 'package:flutter_app/bloc/clientBloc.dart';
 import 'package:flutter_app/routeGenerator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,11 +13,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-    providers: [
-      BlocProvider<ClientBloc>(
-        create: (_) => ClientBloc(),
-      ),
-    ],
+      providers: [
+        BlocProvider<ClientBloc>(
+          create: (_) => ClientBloc(),
+        ),
+        BlocProvider<CartBloc>(
+          create: (_) => CartBloc(),
+        ),
+      ],
       child: MaterialApp(
         title: 'Agenzia viaggi',
         theme: ThemeData(

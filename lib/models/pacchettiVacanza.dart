@@ -23,6 +23,11 @@ class PacchettoVacanzaPK {
   String toString() {
     return 'PacchettoVacanzaPK{dataPartenza: $dataPartenza, localita: $localita}';
   }
+
+  Map<String, dynamic> toJson() => {
+        'dataPartenza': dataPartenza.millisecondsSinceEpoch,
+        'localita': localita
+      };
 }
 
 class PacchettoVacanza {
@@ -46,6 +51,15 @@ class PacchettoVacanza {
   String toString() {
     return 'PacchettoVacanza{pacchetto: $pacchetto}';
   }
+
+  Map<String, dynamic> toJson() =>
+      {
+        'postiDisp': postiDisp,
+        'giorniPermanenza': giorniPermanenza,
+        'prezzo': prezzo,
+        'descrizione': descrizione,
+        'pacchetto': pacchetto.toJson()
+      };
 }
 
 class PacchettoVacanzaProvider {

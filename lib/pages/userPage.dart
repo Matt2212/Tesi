@@ -3,6 +3,7 @@ import 'package:flutter_app/bloc/clientBloc.dart';
 import 'package:flutter_app/models/client.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:sprintf/sprintf.dart';
 
 class UserPage extends StatelessWidget {
   @override
@@ -47,7 +48,38 @@ class UserPage extends StatelessWidget {
                     return ExpansionTile(
                       title: Text(
                           'Data di acquisto: ${DateFormat('d/M/yyyy, HH:mm').format(a.data)}'),
-                      subtitle: Text('Prezzo totale: '),
+                      subtitle: Text(
+                          sprintf('Prezzo: %1.2f €', [a.prezzoTotale])
+                              .toString()),
+                      children: [
+                        ListView.separated(
+                          shrinkWrap: true,
+                          separatorBuilder: (context, index) => Divider(
+                            color: Colors.black,
+                          ),
+                          itemCount: c.acquisti.length,
+                          itemBuilder: (context, index) {
+                            DettaglioPrenotazione dp = a.prenotazioni[index];
+                            return ListTile(
+                              title: Text(sprintf(
+                                  'Destinazione: %s\nPosti prenotati: %d\nPrezo totale %1.2f\nData partenza: %s'
+                                  '\nGiorni Permanenza: %s\n',
+                                  [
+                                    dp.pacchettoVacanza.pacchetto.localita,
+                                    dp.postiPrenotati,
+                                    dp.pacchettoVacanza.prezzo *
+                                        dp.postiPrenotati,
+                                    DateFormat('d/M/yyyy, HH:mm').format(dp
+                                        .pacchettoVacanza
+                                        .pacchetto
+                                        .dataPartenza),
+                                    dp.pacchettoVacanza.giorniPermanenza
+                                  ]).toString()),
+                              subtitle: Text(dp.pacchettoVacanza.descrizione),
+                            );
+                          },
+                        ),
+                      ],
                     );
                   },
                   separatorBuilder: (context, index) => Divider(
