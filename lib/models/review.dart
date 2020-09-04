@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/bloc/blocRecensione.dart';
@@ -110,9 +111,7 @@ class _RecensioneWDState extends State<RecensioneWD> {
       create: (_) => recensioneBloc,
       child: Column(
         children: [
-          if (context
-              .bloc<ClientBloc>()
-              .state is LoggedState) ...[
+          if (context.bloc<ClientBloc>().state is LoggedState) ...[
             Row(
               children: [
                 FlatButton(
@@ -126,9 +125,9 @@ class _RecensioneWDState extends State<RecensioneWD> {
                 ),
                 Expanded(
                     child: Text(
-                      '$_counter',
-                      textAlign: TextAlign.center,
-                    )),
+                  '$_counter',
+                  textAlign: TextAlign.center,
+                )),
                 FlatButton(
                   child: Icon(
                     Icons.remove,
@@ -165,6 +164,13 @@ class _RecensioneWDState extends State<RecensioneWD> {
                 Recensione r = Recensione(localita.nome, _counter,
                     textEditingController.text, bloc.state.c);
                 recensioneBloc.add(AddEvent(r));
+                recensioneBloc.listen((state) {
+                  String result = state.added
+                      ? 'Commento aggiunto correttamente'
+                      : 'Commento non aggiunto';
+                  Scaffold.of(context)
+                      .showSnackBar(SnackBar(content: Text(result)));
+                });
               },
               child: Text(
                 "Invia",
@@ -191,7 +197,15 @@ class _RecensioneWDState extends State<RecensioneWD> {
                               '${DateFormat('d/M/yyyy, HH:mm').format(
                                   r.id.data)}\nvalutazione: ${r.valutazione}'),
                           children: [
-                            Text(r.descrizione, style: TextStyle(fontSize: 16)),
+                            Padding(
+
+                              padding: EdgeInsets.all(20),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(r.descrizione,
+                                    style: TextStyle(fontSize: 16)),
+                              ),
+                            )
                           ],
                         );
                       },

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/models/client.dart';
 import 'package:flutter_app/pages/catalog.dart';
 import 'package:flutter_app/pages/localitaPage.dart';
+import 'package:flutter_app/pages/userPage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/clientBloc.dart';
@@ -24,9 +25,11 @@ class RouteGenerator {
         }
         break;
       case '/account':
-        return MaterialPageRoute(
-            builder: (context) {return context.bloc<ClientBloc>().state is UnLoggedState? LoginPage():CatalogWidget();}
-        );
+        return MaterialPageRoute(builder: (context) {
+          return context.bloc<ClientBloc>().state is UnLoggedState
+              ? LoginPage()
+              : UserPage();
+        });
         //in caso di errore ritorniamo all'homepage
         return MaterialPageRoute(builder: (_) => CatalogWidget());
       default:

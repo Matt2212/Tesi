@@ -17,20 +17,19 @@ class Cliente {
     nome = json['nome'];
     cognome = json['cognome'];
     email = json['email'];
-    username = json['username'];
+    username = json['userName'];
     recapito = json['recapito'];
     acquisti = List<Map<String, dynamic>>.from(json['acquisti'])
         .map((e) => Acquisto.fromJson(e))
         .toList();
   }
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'id': id,
         'nome': nome,
         'cognome': cognome,
         'email': email,
-        'username': username,
+        'userName': username,
         'recapito': recapito,
       };
 }
@@ -45,9 +44,9 @@ class Acquisto {
     id = json['id'];
     acquirente = json['acquirente'];
     data = DateTime.fromMillisecondsSinceEpoch(json['data']);
-    prenotazioni =
-        List<Map<String, dynamic>>.from(json['prenotazioni']).map((e) =>
-            DettaglioPrenotazione.fromJson(e)).toList();
+    prenotazioni = List<Map<String, dynamic>>.from(json['prenotazioni'])
+        .map((e) => DettaglioPrenotazione.fromJson(e))
+        .toList();
   }
 }
 
@@ -80,19 +79,22 @@ class LoginPage extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            BlocBuilder<ClientBloc, ClientState>(
-                buildWhen: (previous, current) => previous == current,
-                builder: (context, state) {
-                  return TextField(
-                    controller: textEditingController,
-                    decoration: InputDecoration(
-                      labelText: 'username',
-                      errorText: ((state as UnLoggedState).error)
-                          ? 'username non valido'
-                          : null,
-                    ),
-                  );
-                }),
+            Padding(
+              padding: EdgeInsets.all(15),
+              child: BlocBuilder<ClientBloc, ClientState>(
+                  buildWhen: (previous, current) => previous == current,
+                  builder: (context, state) {
+                    return TextField(
+                      controller: textEditingController,
+                      decoration: InputDecoration(
+                        labelText: 'username',
+                        errorText: ((state as UnLoggedState).error)
+                            ? 'username non valido'
+                            : null,
+                      ),
+                    );
+                  }),
+            ),
             const Padding(padding: EdgeInsets.all(1)),
             RaisedButton(
                 child: const Text('Login'),
