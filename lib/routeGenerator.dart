@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/client.dart';
+import 'package:flutter_app/pages/CartPage.dart';
 import 'package:flutter_app/pages/catalog.dart';
 import 'package:flutter_app/pages/localitaPage.dart';
 import 'package:flutter_app/pages/userPage.dart';
@@ -18,7 +19,7 @@ class RouteGenerator {
 
     switch (settings.name) {
       case '/':
-        return MaterialPageRoute(builder: (_) => CatalogWidget());
+        return MaterialPageRoute(builder: (_) => CatalogPage());
       case '/localita':
         if (args is Localita) {
           return MaterialPageRoute(builder: (_) => LocalitaPage(args));
@@ -30,10 +31,11 @@ class RouteGenerator {
               ? LoginPage()
               : UserPage();
         });
-        //in caso di errore ritorniamo all'homepage
-        return MaterialPageRoute(builder: (_) => CatalogWidget());
+      case '/cart':
+        return MaterialPageRoute(builder: (_) => CartPage());
+      //in caso di errore ritorniamo all'homepage
       default:
-        return MaterialPageRoute(builder: (_) => CatalogWidget());
+        return MaterialPageRoute(builder: (_) => CatalogPage());
     }
   }
 }

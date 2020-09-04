@@ -2,9 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/bloc/cartBloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:sprintf/sprintf.dart';
 
 import 'localita.dart';
 
@@ -18,6 +21,17 @@ class PacchettoVacanzaPK {
     dataPartenza = DateTime.fromMillisecondsSinceEpoch(json['dataPartenza']);
     localita = json['localita'] as String;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PacchettoVacanzaPK &&
+          runtimeType == other.runtimeType &&
+          dataPartenza == other.dataPartenza &&
+          localita == other.localita;
+
+  @override
+  int get hashCode => dataPartenza.hashCode ^ localita.hashCode;
 
   @override
   String toString() {
@@ -58,7 +72,7 @@ class PacchettoVacanza {
         'giorniPermanenza': giorniPermanenza,
         'prezzo': prezzo,
         'descrizione': descrizione,
-        'pacchetto': pacchetto.toJson()
+        'pacchetto': pacchetto
       };
 }
 
@@ -84,11 +98,11 @@ List<dynamic> parsePacchetto(String responseBody) {
 
 class PacchettoVacanzaWd extends StatelessWidget {
   final Localita _localita;
-
   PacchettoVacanzaWd(this._localita);
 
   @override
   Widget build(BuildContext context) {
+    final CartBloc cartBloc = BlocProvider.of<CartBloc>(context);
     return FutureBuilder(
       future: PacchettoVacanzaProvider(_localita.nome).pacchetti(),
       builder: (context, snapshoot) {
@@ -107,26 +121,32 @@ class PacchettoVacanzaWd extends StatelessWidget {
                 PacchettoVacanza pv = snapshoot.data[index] as PacchettoVacanza;
                 return ListTile(
                     title: Text(
-                        'Data e ora di partenza: ${DateFormat('d/M/yyyy, HH:mm').format(pv.pacchetto.dataPartenza)}'),
+                        'Prezzo: ${sprintf('%s € a persona', [pv.prezzo])}'),
+                    subtitle: Text(
+                        'Data e ora di partenza: ${DateFormat('d/M/yyyy, HH:mm')
+                            .format(pv.pacchetto.dataPartenza)}\n'
+                            'Giorni di permanenza: ${pv.giorniPermanenza}'),
                     onTap: () async {
                       int number = await showDialog(
                         context: context,
-                        builder: (_) => SimpleDialog(
-                          title:
+                        builder: (_) =>
+                            SimpleDialog(
+                              title:
                               Text('Selezionare il numero di posti prenotare:'),
-                          children: [
-                            Center(
-                                child:
+                              children: [
+                                Center(
+                                    child:
                                     Text('Posti disponibili ${pv.postiDisp}')),
-                            LimitedCounter(pv.postiDisp)
-                          ],
-                        ),
+                                LimitedCounter(pv.postiDisp)
+                              ],
+                            ),
                       );
-
                       if (number == null || number <= 0) return;
-                      //TODO add al carrello e crea la prenotazione
+                      print(number);
+                      cartBloc.add(PutCart(pv, number));
                       Scaffold.of(context)
-                          .showSnackBar(SnackBar(content: Text("$number")));
+                          .showSnackBar(SnackBar(
+                          content: Text("Prenotazione aggiunta al carrello")));
                     });
               },
               shrinkWrap: true,
@@ -157,7 +177,7 @@ class LimitedCounter extends StatefulWidget {
 }
 
 class _LimitedCounterState extends State<LimitedCounter> {
-  int _counter = 0;
+  int _counter = 1;
   final int max;
 
   int get counter => _counter;
@@ -189,7 +209,7 @@ class _LimitedCounterState extends State<LimitedCounter> {
                 Icons.remove,
               ),
               onPressed: () {
-                if (_counter > 0) {
+                if (_counter > 1) {
                   _counter--;
                   setState(() {});
                 }
@@ -209,3 +229,5 @@ class _LimitedCounterState extends State<LimitedCounter> {
     );
   }
 }
+
+

@@ -45,7 +45,6 @@ class ClientBloc extends Bloc<LoginEvent, ClientState> {
     if(response.statusCode >= 400) {
       return (state as UnLoggedState)..error = true;
     }
-
     Cliente c = Cliente.fromJson(json.decode(response.body));
     return LoggedState(c);
   }

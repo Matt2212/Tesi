@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/bloc/cartBloc.dart';
 import 'package:flutter_app/models/localita.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-class CatalogWidget extends StatelessWidget {
+class CatalogPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<CartBloc>(context).add(GetCart());
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: Icon(Icons.shopping_cart),
+            onPressed: () {
+              Navigator.of(context).pushNamed('/cart');
+            },
+          ),
+        ],
         leading: IconButton(
           icon: Icon(Icons.account_circle),
           onPressed: () {

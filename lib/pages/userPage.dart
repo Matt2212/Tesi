@@ -38,49 +38,55 @@ class UserPage extends StatelessWidget {
                 padding: EdgeInsets.all(50),
               ),
               Text(
-                'Acquisti: ',
+                (c.acquisti.length > 1)
+                    ? 'Acquisti: '
+                    : 'Non hai effettuato alcun acquisto',
                 style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
               ),
               ListView.separated(
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     Acquisto a = c.acquisti[index];
-                    return ExpansionTile(
-                      title: Text(
-                          'Data di acquisto: ${DateFormat('d/M/yyyy, HH:mm').format(a.data)}'),
-                      subtitle: Text(
-                          sprintf('Prezzo: %1.2f €', [a.prezzoTotale])
-                              .toString()),
-                      children: [
-                        ListView.separated(
-                          shrinkWrap: true,
-                          separatorBuilder: (context, index) => Divider(
-                            color: Colors.black,
-                          ),
-                          itemCount: c.acquisti.length,
-                          itemBuilder: (context, index) {
-                            DettaglioPrenotazione dp = a.prenotazioni[index];
-                            return ListTile(
-                              title: Text(sprintf(
-                                  'Destinazione: %s\nPosti prenotati: %d\nPrezo totale %1.2f\nData partenza: %s'
-                                  '\nGiorni Permanenza: %s\n',
-                                  [
-                                    dp.pacchettoVacanza.pacchetto.localita,
-                                    dp.postiPrenotati,
-                                    dp.pacchettoVacanza.prezzo *
-                                        dp.postiPrenotati,
-                                    DateFormat('d/M/yyyy, HH:mm').format(dp
-                                        .pacchettoVacanza
-                                        .pacchetto
-                                        .dataPartenza),
-                                    dp.pacchettoVacanza.giorniPermanenza
-                                  ]).toString()),
-                              subtitle: Text(dp.pacchettoVacanza.descrizione),
-                            );
-                          },
-                        ),
-                      ],
-                    );
+                    return a.data == null
+                        ? Container()
+                        : ExpansionTile(
+                            title: Text(
+                                'Data di acquisto: ${DateFormat('d/M/yyyy, HH:mm').format(a.data)}'),
+                            subtitle: Text(
+                                sprintf('Prezzo: %1.2f €', [a.prezzoTotale])
+                                    .toString()),
+                            children: [
+                              ListView.separated(
+                                shrinkWrap: true,
+                                separatorBuilder: (context, index) => Divider(
+                                  color: Colors.black,
+                                ),
+                                itemCount: c.acquisti.length,
+                                itemBuilder: (context, index) {
+                                  DettaglioPrenotazione dp =
+                                      a.prenotazioni[index];
+                                  return ListTile(
+                                    title: Text(sprintf(
+                                        'Destinazione: %s\nPosti prenotati: %d\nPrezo totale %1.2f\nData partenza: %s'
+                                        '\nGiorni Permanenza: %s\n',
+                                        [
+                                          dp.pacchettoVacanza.pacchetto
+                                              .localita,
+                                          dp.postiPrenotati,
+                                          dp.pacchettoVacanza.prezzo *
+                                              dp.postiPrenotati,
+                                          DateFormat('d/M/yyyy, HH:mm').format(
+                                              dp.pacchettoVacanza.pacchetto
+                                                  .dataPartenza),
+                                          dp.pacchettoVacanza.giorniPermanenza
+                                        ]).toString()),
+                                    subtitle:
+                                        Text(dp.pacchettoVacanza.descrizione),
+                                  );
+                                },
+                              ),
+                            ],
+                          );
                   },
                   separatorBuilder: (context, index) => Divider(
                         color: Colors.black,

@@ -1,6 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_app/bloc/cartBloc.dart';
 import 'package:flutter_app/bloc/clientBloc.dart';
 import 'package:flutter_app/models/pacchettiVacanza.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -58,7 +57,7 @@ class Acquisto {
         'acquirente': acquirente,
         'data': data == null ? null : data.millisecondsSinceEpoch,
         'prezzoTotale': prezzoTotale,
-        'prenotazioni': json.encode(prenotazioni)
+        'prenotazioni': prenotazioni
       };
 }
 
@@ -81,7 +80,7 @@ class DettaglioPrenotazione {
         'id': id,
         'acquisto': acquisto,
         'postiPrenotati': postiPrenotati,
-        'pacchettoVacanza': pacchettoVacanza.toJson()
+        'pacchettoVacanza': pacchettoVacanza
       };
 }
 
@@ -123,8 +122,12 @@ class LoginPage extends StatelessWidget {
                   var bloc = BlocProvider.of<ClientBloc>(context);
                   bloc.add(LoginEvent(textEditingController.text));
                   bloc.listen((c) {
-                    if (c is LoggedState)
-                      Navigator.of(context).popAndPushNamed('/account');
+                    if (c is LoggedState) {
+                      var bloc = context.bloc<CartBloc>();
+                      bloc.add(MergeCart(c.c.username));
+                      bloc.listen((state) =>
+                          Navigator.of(context).popAndPushNamed('/account'));
+                    }
                   });
                 }),
           ],

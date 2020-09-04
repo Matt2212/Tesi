@@ -98,7 +98,7 @@ class _RecensioneWDState extends State<RecensioneWD> {
   RecensioneBloc recensioneBloc;
   Localita localita;
 
-  int _counter = 0;
+  int _counter = 1;
 
   _RecensioneWDState(this.localita) {
     recensioneBloc = RecensioneBloc(localita.nome);
@@ -133,7 +133,7 @@ class _RecensioneWDState extends State<RecensioneWD> {
                     Icons.remove,
                   ),
                   onPressed: () {
-                    if (_counter > 0) {
+                    if (_counter > 1) {
                       _counter--;
                       setState(() {});
                     }
