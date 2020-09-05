@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Cliente {
   int id;
-  String nome, cognome, email, username, recapito;
+  String nome, cognome, email, username, recapito, password;
   List<Acquisto> acquisti = [];
 
   Cliente(this.id, this.nome, this.cognome, this.username);
@@ -18,6 +18,7 @@ class Cliente {
     email = json['email'];
     username = json['userName'];
     recapito = json['recapito'];
+    password = json['password'];
     acquisti = List<Map<String, dynamic>>.from(json['acquisti'])
         .map((e) => Acquisto.fromJson(e))
         .toList();
@@ -30,6 +31,7 @@ class Cliente {
         'email': email,
         'userName': username,
         'recapito': recapito,
+    'password': password
       };
 }
 
@@ -51,8 +53,7 @@ class Acquisto {
         .toList();
   }
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'id': id,
         'acquirente': acquirente,
         'data': data == null ? null : data.millisecondsSinceEpoch,
@@ -85,7 +86,8 @@ class DettaglioPrenotazione {
 }
 
 class LoginPage extends StatelessWidget {
-  final textEditingController = TextEditingController();
+  final textEditingControllerUsr = TextEditingController();
+  final textEditingControllerPasswd = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -103,14 +105,25 @@ class LoginPage extends StatelessWidget {
               child: BlocBuilder<ClientBloc, ClientState>(
                   buildWhen: (previous, current) => previous == current,
                   builder: (context, state) {
-                    return TextField(
-                      controller: textEditingController,
-                      decoration: InputDecoration(
-                        labelText: 'username',
-                        errorText: ((state as UnLoggedState).error)
-                            ? 'username non valido'
-                            : null,
-                      ),
+                    return Column(
+                      children: [
+                        TextField(
+                          controller: textEditingControllerUsr,
+                          decoration: InputDecoration(
+                            labelText: 'username',
+                            errorText: ((state as UnLoggedState).error)
+                                ? 'username o password non validi'
+                                : null,
+                          ),
+                        ),
+                        TextField(
+                          obscureText: true,
+                          controller: textEditingControllerPasswd,
+                          decoration: InputDecoration(
+                            labelText: 'password',
+                          ),
+                        ),
+                      ],
                     );
                   }),
             ),
@@ -124,7 +137,8 @@ class LoginPage extends StatelessWidget {
                   child: const Text('Login'),
                   onPressed: () {
                     BlocProvider.of<ClientBloc>(context)
-                        .add(LoginEvent(textEditingController.text));
+                        .add(LoginEvent(textEditingControllerUsr.text,
+                        textEditingControllerPasswd.text));
                   }),
             ),
           ],

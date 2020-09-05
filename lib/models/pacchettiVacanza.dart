@@ -121,19 +121,16 @@ class PacchettoVacanzaWd extends StatelessWidget {
                 return BlocListener<CartBloc, CartState>(
                   listener: (context, state) {},
                   child: ListTile(
-                      title: Text(
+                      title: Text('Descrizione: ${pv.descrizione}\n'
                           'Prezzo: ${sprintf('%s € a persona', [pv.prezzo])}'),
                       subtitle: Text(
-                          'Data e ora di partenza: ${DateFormat(
-                              'd/M/yyyy, HH:mm').format(
-                              pv.pacchetto.dataPartenza)}\n'
-                              'Giorni di permanenza: ${pv.giorniPermanenza}'),
+                          'Data e ora di partenza: ${DateFormat('d/M/yyyy, HH:mm').format(pv.pacchetto.dataPartenza)}\n'
+                          'Giorni di permanenza: ${pv.giorniPermanenza}'),
                       onTap: () {
                         showDialog(
                           context: context,
-                          builder: (_) =>
-                              SimpleDialog(
-                                title: Text(
+                          builder: (_) => SimpleDialog(
+                            title: Text(
                                     'Selezionare il numero di posti prenotare:'),
                                 children: [
                                   Center(
