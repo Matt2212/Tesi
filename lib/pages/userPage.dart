@@ -49,35 +49,37 @@ class UserPage extends StatelessWidget {
                                 sprintf('Prezzo: %1.2f €', [a.prezzoTotale])
                                     .toString()),
                             children: [
-                              ListView.separated(
-                                shrinkWrap: true,
-                                separatorBuilder: (context, i) =>
-                                    Divider(
-                                      color: Colors.black,
-                                    ),
-                                itemCount: c.acquisti.length,
-                                itemBuilder: (context, i) {
-                                  DettaglioPrenotazione dp =
-                                  a.prenotazioni[i];
-                                  return ListTile(
-                                    title: Text(sprintf(
-                                        'Destinazione: %s\nPosti prenotati: %d\nPrezo totale %1.2f\nData partenza: %s'
-                                            '\nGiorni Permanenza: %s\n',
-                                        [
-                                          dp.pacchettoVacanza.pacchetto
-                                              .localita,
-                                          dp.postiPrenotati,
-                                          dp.pacchettoVacanza.prezzo *
-                                              dp.postiPrenotati,
-                                          DateFormat('d/M/yyyy, HH:mm').format(
-                                              dp.pacchettoVacanza.pacchetto
-                                                  .dataPartenza),
-                                          dp.pacchettoVacanza.giorniPermanenza
-                                        ]).toString()),
-                                    subtitle:
-                                    Text(dp.pacchettoVacanza.descrizione),
-                                  );
-                                },
+                              Container(
+                                child: ListView.separated(
+                                  shrinkWrap: true,
+                                  separatorBuilder: (tic, i) => Divider(
+                                    color: Colors.black,
+                                  ),
+                                  itemCount:
+                                      c.acquisti[index].prenotazioni.length,
+                                  itemBuilder: (tic, i) {
+                                    DettaglioPrenotazione dp =
+                                        a.prenotazioni[i];
+                                    return ListTile(
+                                      title: Text(sprintf(
+                                          'Destinazione: %s\nPosti prenotati: %d\nPrezo totale %1.2f\nData partenza: %s'
+                                          '\nGiorni Permanenza: %s\n',
+                                          [
+                                            dp.pacchettoVacanza.pacchetto
+                                                .localita,
+                                            dp.postiPrenotati,
+                                            dp.pacchettoVacanza.prezzo *
+                                                dp.postiPrenotati,
+                                            DateFormat('d/M/yyyy, HH:mm')
+                                                .format(dp.pacchettoVacanza
+                                                    .pacchetto.dataPartenza),
+                                            dp.pacchettoVacanza.giorniPermanenza
+                                          ]).toString()),
+                                      subtitle:
+                                          Text(dp.pacchettoVacanza.descrizione),
+                                    );
+                                  },
+                                ),
                               ),
                             ],
                         );
