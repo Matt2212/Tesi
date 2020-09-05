@@ -31,7 +31,7 @@ class LoginEvent extends UserEvent {
 }
 
 class AddAcquisto extends UserEvent {
-  AddAcquisto(String nome, this._acquisto) {
+  AddAcquisto(this._acquisto) {
     _acquisto.data = DateTime.now();
   }
 
@@ -46,7 +46,8 @@ class ClientBloc extends Bloc<UserEvent, ClientState> {
     if (event is AddAcquisto) {
       state.c.acquisti.add(event._acquisto);
       yield state;
-    } else if (event is LoginEvent) {
+    }
+    if (event is LoginEvent) {
       ClientState user = await _login(event.nome, event.password);
       yield user;
     }

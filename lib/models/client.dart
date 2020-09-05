@@ -31,7 +31,7 @@ class Cliente {
         'email': email,
         'userName': username,
         'recapito': recapito,
-    'password': password
+        'password': password
       };
 }
 
@@ -66,8 +66,8 @@ class DettaglioPrenotazione {
   int id, acquisto, postiPrenotati;
   PacchettoVacanza pacchettoVacanza;
 
-  DettaglioPrenotazione(this.id, this.acquisto, this.postiPrenotati,
-      this.pacchettoVacanza);
+  DettaglioPrenotazione(
+      this.id, this.acquisto, this.postiPrenotati, this.pacchettoVacanza);
 
   DettaglioPrenotazione.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -76,8 +76,7 @@ class DettaglioPrenotazione {
     pacchettoVacanza = PacchettoVacanza.fromJson(json['pacchettoVacanza']);
   }
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'id': id,
         'acquisto': acquisto,
         'postiPrenotati': postiPrenotati,
@@ -86,8 +85,8 @@ class DettaglioPrenotazione {
 }
 
 class LoginPage extends StatelessWidget {
-  final textEditingControllerUsr = TextEditingController();
-  final textEditingControllerPasswd = TextEditingController();
+  final textUsr = TextEditingController();
+  final textPasswd = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +107,7 @@ class LoginPage extends StatelessWidget {
                     return Column(
                       children: [
                         TextField(
-                          controller: textEditingControllerUsr,
+                          controller: textUsr,
                           decoration: InputDecoration(
                             labelText: 'username',
                             errorText: ((state as UnLoggedState).error)
@@ -118,7 +117,7 @@ class LoginPage extends StatelessWidget {
                         ),
                         TextField(
                           obscureText: true,
-                          controller: textEditingControllerPasswd,
+                          controller: textPasswd,
                           decoration: InputDecoration(
                             labelText: 'password',
                           ),
@@ -134,12 +133,14 @@ class LoginPage extends StatelessWidget {
                   context.bloc<CartBloc>().add(MergeCart(state.c.username));
               },
               child: RaisedButton(
-                  child: const Text('Login'),
-                  onPressed: () {
-                    BlocProvider.of<ClientBloc>(context)
-                        .add(LoginEvent(textEditingControllerUsr.text,
-                        textEditingControllerPasswd.text));
-                  }),
+                child: const Text('Login'),
+                onPressed: () {
+                  BlocProvider.of<ClientBloc>(context).add(
+                    LoginEvent(textUsr.text,
+                        textPasswd.text),
+                  );
+                },
+              ),
             ),
           ],
         ),

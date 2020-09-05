@@ -74,7 +74,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       if (r.statusCode >= 400)
         yield CartState(state.a);
       else {
-        clientBloc.add(AddAcquisto('', state.a));
+        clientBloc.add(AddAcquisto(state.a));
         yield CartState(Acquisto.fromJson(json.decode(r.body)), event);
       }
     } else if (event is PutCart) {
