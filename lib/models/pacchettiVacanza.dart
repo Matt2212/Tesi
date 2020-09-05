@@ -66,8 +66,7 @@ class PacchettoVacanza {
     return 'PacchettoVacanza{pacchetto: $pacchetto}';
   }
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'postiDisp': postiDisp,
         'giorniPermanenza': giorniPermanenza,
         'prezzo': prezzo,
@@ -98,11 +97,11 @@ List<dynamic> parsePacchetto(String responseBody) {
 
 class PacchettoVacanzaWd extends StatelessWidget {
   final Localita _localita;
+
   PacchettoVacanzaWd(this._localita);
 
   @override
   Widget build(BuildContext context) {
-    final CartBloc cartBloc = BlocProvider.of<CartBloc>(context);
     return FutureBuilder(
       future: PacchettoVacanzaProvider(_localita.nome).pacchetti(),
       builder: (context, snapshoot) {
@@ -119,35 +118,40 @@ class PacchettoVacanzaWd extends StatelessWidget {
               itemCount: snapshoot.data.length,
               itemBuilder: (context, index) {
                 PacchettoVacanza pv = snapshoot.data[index] as PacchettoVacanza;
-                return ListTile(
-                    title: Text(
-                        'Prezzo: ${sprintf('%s € a persona', [pv.prezzo])}'),
-                    subtitle: Text(
-                        'Data e ora di partenza: ${DateFormat('d/M/yyyy, HH:mm')
-                            .format(pv.pacchetto.dataPartenza)}\n'
-                            'Giorni di permanenza: ${pv.giorniPermanenza}'),
-                    onTap: () async {
-                      int number = await showDialog(
-                        context: context,
-                        builder: (_) =>
-                            SimpleDialog(
-                              title:
-                              Text('Selezionare il numero di posti prenotare:'),
-                              children: [
-                                Center(
-                                    child:
-                                    Text('Posti disponibili ${pv.postiDisp}')),
-                                LimitedCounter(pv.postiDisp)
-                              ],
-                            ),
-                      );
-                      if (number == null || number <= 0) return;
-                      print(number);
-                      cartBloc.add(PutCart(pv, number));
-                      Scaffold.of(context)
-                          .showSnackBar(SnackBar(
-                          content: Text("Prenotazione aggiunta al carrello")));
-                    });
+                return BlocListener<CartBloc, CartState>(
+                  listener: (context, state) {},
+                  child: ListTile(
+                      title: Text(
+                          'Prezzo: ${sprintf('%s € a persona', [pv.prezzo])}'),
+                      subtitle: Text(
+                          'Data e ora di partenza: ${DateFormat(
+                              'd/M/yyyy, HH:mm').format(
+                              pv.pacchetto.dataPartenza)}\n'
+                              'Giorni di permanenza: ${pv.giorniPermanenza}'),
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (_) =>
+                              SimpleDialog(
+                                title: Text(
+                                    'Selezionare il numero di posti prenotare:'),
+                                children: [
+                                  Center(
+                                      child: Text(
+                                          'Posti disponibili ${pv.postiDisp}')),
+                                  LimitedCounter(pv.postiDisp)
+                                ],
+                              ),
+                        ).then((number) {
+                          if (number == null || number <= 0) return;
+                          BlocProvider.of<CartBloc>(context)
+                              .add(PutCart(pv, number));
+                          Scaffold.of(context).showSnackBar(SnackBar(
+                              content: Text(
+                                  "Prenotazione aggiunta al carrello")));
+                        });
+                      }),
+                );
               },
               shrinkWrap: true,
             ),
@@ -229,5 +233,3 @@ class _LimitedCounterState extends State<LimitedCounter> {
     );
   }
 }
-
-

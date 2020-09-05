@@ -160,9 +160,12 @@ class _RecensioneWDState extends State<RecensioneWD> {
               disabledTextColor: Colors.black,
               padding: EdgeInsets.all(8.0),
               onPressed: () async {
-                var bloc = context.bloc<ClientBloc>();
-                Recensione r = Recensione(localita.nome, _counter,
-                    textEditingController.text, bloc.state.c);
+                context.bloc<ClientBloc>();
+                Recensione r = Recensione(
+                    localita.nome,
+                    _counter,
+                    textEditingController.text,
+                    context.bloc<ClientBloc>().state.c);
                 recensioneBloc.add(AddEvent(r));
                 recensioneBloc.listen((state) {
                   String result = state.added

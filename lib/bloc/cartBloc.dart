@@ -8,8 +8,9 @@ import 'package:http/http.dart' as http;
 
 class CartState {
   Acquisto a;
+  CartEvent lastEvent;
 
-  CartState([this.a]);
+  CartState([this.a, this.lastEvent]);
 }
 
 abstract class CartEvent {}
@@ -53,20 +54,23 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     if (event is GetCart) {
       var url = Uri.http('192.168.0.9:8080', '/cart');
       state.a = Acquisto.fromJson(json.decode((await http.get(url)).body));
+      yield CartState(state.a, event);
     } else if (event is SaveCart) {
       await saveCart();
-      yield CartState(state.a);
+      yield CartState(state.a, event);
     } else if (event is BuyCart) {
       var url = Uri.http('192.168.0.9:8080', 'cart/acquisto');
       Response r = await http.put(
         url,
-        body: state.a.toJson(),
+        body: json.encode(state.a.toJson()),
         headers: <String, String>{
-          'Content-Type': 'application/json;charset=UTF-8',
+          'Content-Type': 'application/json',
         },
       );
-      print(r.body);
-      yield CartState(Acquisto.fromJson(json.decode(r.body)));
+      if (r.statusCode >= 400)
+        yield CartState(state.a);
+      else
+        yield CartState(Acquisto.fromJson(json.decode(r.body)), event);
     } else if (event is PutCart) {
       PacchettoVacanza pv = event.pv;
       bool toAdd = true;
@@ -87,22 +91,23 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         state.a.prezzoTotale += event.posti * pv.prezzo;
       }
       await saveCart();
-      yield CartState(state.a);
+      yield CartState(state.a, event);
     } else if (event is MergeCart) {
       var url =
           Uri.http('192.168.0.9:8080', '/cart/${state.a.id}/${event.username}');
-      state.a = Acquisto.fromJson(json.decode((await http.put(url)).body));
-      yield CartState(state.a);
+      var body2 = (await http.put(url)).body;
+      state.a = Acquisto.fromJson(json.decode(body2));
+      yield CartState(state.a, event);
     } else if (event is RemoveCart) {
       Acquisto cart = state.a..prenotazioni.removeAt(event.index);
       await saveCart();
-      yield CartState(cart);
+      yield CartState(cart, event);
     } else if (event is SetDettaglio) {
       DettaglioPrenotazione dp = state.a.prenotazioni[event.index];
       dp.postiPrenotati = event.posti;
       state.a.prezzoTotale = event.posti * dp.pacchettoVacanza.prezzo;
       saveCart();
-      yield CartState(state.a);
+      yield CartState(state.a, event);
     }
   }
 

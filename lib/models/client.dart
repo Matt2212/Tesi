@@ -118,15 +118,11 @@ class LoginPage extends StatelessWidget {
             RaisedButton(
                 child: const Text('Login'),
                 onPressed: () {
-                  // ignore: close_sinks
-                  var bloc = BlocProvider.of<ClientBloc>(context);
-                  bloc.add(LoginEvent(textEditingController.text));
-                  bloc.listen((c) {
+                  BlocProvider.of<ClientBloc>(context)
+                      .add(LoginEvent(textEditingController.text));
+                  BlocProvider.of<ClientBloc>(context).listen((c) {
                     if (c is LoggedState) {
-                      var bloc = context.bloc<CartBloc>();
-                      bloc.add(MergeCart(c.c.username));
-                      bloc.listen((state) =>
-                          Navigator.of(context).popAndPushNamed('/account'));
+                      context.bloc<CartBloc>().add(MergeCart(c.c.username));
                     }
                   });
                 }),
