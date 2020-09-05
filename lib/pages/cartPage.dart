@@ -118,18 +118,25 @@ class CartPage extends StatelessWidget {
                                         : 'Qualcosa è andato storto, non è stato possibile effettuare l\'acquisto')));
                               },
                               child: BlocBuilder<ClientBloc, ClientState>(
-                                  builder: (contextz, state) =>
-                                      (state is LoggedState)
-                                          ? RaisedButton(
-                                              onPressed: () {
-                                                context
-                                                    .bloc<CartBloc>()
-                                                    .add(BuyCart());
-                                              },
-                                              child: Text('Acquista'),
-                                              color: Colors.deepOrange,
-                                            )
-                                          : Container()),
+                                  builder: (contextz, state) {
+                                return (state is LoggedState &&
+                                        context
+                                            .bloc<CartBloc>()
+                                            .state
+                                            .a
+                                            .prenotazioni
+                                            .isNotEmpty)
+                                    ? RaisedButton(
+                                        onPressed: () {
+                                          context
+                                              .bloc<CartBloc>()
+                                              .add(BuyCart());
+                                        },
+                                        child: Text('Acquista'),
+                                        color: Colors.deepOrange,
+                                      )
+                                    : Container();
+                              }),
                             )
                           ],
                         ),

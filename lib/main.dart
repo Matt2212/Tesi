@@ -9,16 +9,24 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  // ignore: close_sinks
+  final clientBloc = ClientBloc();
+
+  MyApp();
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider<ClientBloc>(
-          create: (_) => ClientBloc(),
+          create: (_) => clientBloc,
+          lazy: false,
         ),
         BlocProvider<CartBloc>(
-          create: (_) => CartBloc()..add(GetCart()),
+          create: (_) =>
+          CartBloc(this.clientBloc)
+            ..add(GetCart()),
           lazy: false,
         ),
       ],
@@ -34,4 +42,6 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
+
+
 }

@@ -6,6 +6,8 @@ import 'package:flutter_app/models/pacchettiVacanza.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 
+import 'clientBloc.dart';
+
 class CartState {
   Acquisto a;
   CartEvent lastEvent;
@@ -47,14 +49,15 @@ class SetDettaglio extends CartEvent {
 }
 
 class CartBloc extends Bloc<CartEvent, CartState> {
-  CartBloc() : super(CartState());
+  final ClientBloc clientBloc;
+
+  CartBloc(this.clientBloc) : super(CartState());
 
   @override
   Stream<CartState> mapEventToState(CartEvent event) async* {
     if (event is GetCart) {
       var url = Uri.http('192.168.0.9:8080', '/cart');
       state.a = Acquisto.fromJson(json.decode((await http.get(url)).body));
-      print(state.a.toJson());
       yield CartState(state.a, event);
     } else if (event is SaveCart) {
       await saveCart();
@@ -70,8 +73,10 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       );
       if (r.statusCode >= 400)
         yield CartState(state.a);
-      else
+      else {
+        clientBloc.add(AddAcquisto('', state.a));
         yield CartState(Acquisto.fromJson(json.decode(r.body)), event);
+      }
     } else if (event is PutCart) {
       PacchettoVacanza pv = event.pv;
       bool toAdd = true;

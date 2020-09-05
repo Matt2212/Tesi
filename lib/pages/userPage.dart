@@ -14,37 +14,29 @@ class UserPage extends StatelessWidget {
         title: Text(c.username),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Nome: ${c.nome}',
-                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'Cognome: ${c.cognome}',
-                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'Email: ${c.email}',
-                style: TextStyle(fontSize: 15.0),
-              ),
-              Text(
-                'Recapito: ${c.recapito}',
-                style: TextStyle(fontSize: 15.0),
-              ),
-              Padding(
-                padding: EdgeInsets.all(50),
-              ),
-              Text(
-                (c.acquisti.length > 1)
-                    ? 'Acquisti: '
-                    : 'Non hai effettuato alcun acquisto',
-                style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
-              ),
-              ListView.separated(
+          child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Nome: ${c.nome}\n'
+              'Cognome: ${c.cognome}',
+              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              'Email: ${c.email}\n'
+              'Recapito: ${c.recapito}',
+              style: TextStyle(fontSize: 15.0),
+            ),
+            Text(
+              (c.acquisti.length > 1)
+                  ? 'Acquisti: '
+                  : 'Non hai effettuato alcun acquisto',
+              style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
+            ),
+            Expanded(
+              child: ListView.separated(
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     Acquisto a = c.acquisti[index];
@@ -57,48 +49,48 @@ class UserPage extends StatelessWidget {
                                 sprintf('Prezzo: %1.2f €', [a.prezzoTotale])
                                     .toString()),
                             children: [
-                              Container(
-                                child: ListView.separated(
-                                  shrinkWrap: true,
-                                  separatorBuilder: (context, index) => Divider(
-                                    color: Colors.black,
-                                  ),
-                                  itemCount: c.acquisti.length,
-                                  itemBuilder: (context, index) {
-                                    DettaglioPrenotazione dp =
-                                        a.prenotazioni[index];
-                                    return ListTile(
-                                      title: Text(sprintf(
-                                          'Destinazione: %s\nPosti prenotati: %d\nPrezo totale %1.2f\nData partenza: %s'
-                                          '\nGiorni Permanenza: %s\n',
-                                          [
-                                            dp.pacchettoVacanza.pacchetto
-                                                .localita,
-                                            dp.postiPrenotati,
-                                            dp.pacchettoVacanza.prezzo *
-                                                dp.postiPrenotati,
-                                            DateFormat('d/M/yyyy, HH:mm')
-                                                .format(dp.pacchettoVacanza
-                                                    .pacchetto.dataPartenza),
-                                            dp.pacchettoVacanza.giorniPermanenza
-                                          ]).toString()),
-                                      subtitle:
-                                          Text(dp.pacchettoVacanza.descrizione),
-                                    );
-                                  },
-                                ),
+                              ListView.separated(
+                                shrinkWrap: true,
+                                separatorBuilder: (context, i) =>
+                                    Divider(
+                                      color: Colors.black,
+                                    ),
+                                itemCount: c.acquisti.length,
+                                itemBuilder: (context, i) {
+                                  DettaglioPrenotazione dp =
+                                  a.prenotazioni[i];
+                                  return ListTile(
+                                    title: Text(sprintf(
+                                        'Destinazione: %s\nPosti prenotati: %d\nPrezo totale %1.2f\nData partenza: %s'
+                                            '\nGiorni Permanenza: %s\n',
+                                        [
+                                          dp.pacchettoVacanza.pacchetto
+                                              .localita,
+                                          dp.postiPrenotati,
+                                          dp.pacchettoVacanza.prezzo *
+                                              dp.postiPrenotati,
+                                          DateFormat('d/M/yyyy, HH:mm').format(
+                                              dp.pacchettoVacanza.pacchetto
+                                                  .dataPartenza),
+                                          dp.pacchettoVacanza.giorniPermanenza
+                                        ]).toString()),
+                                    subtitle:
+                                    Text(dp.pacchettoVacanza.descrizione),
+                                  );
+                                },
                               ),
                             ],
-                          );
-                  },
-                  separatorBuilder: (context, index) => Divider(
-                        color: Colors.black,
-                      ),
-                  itemCount: c.acquisti.length)
-            ],
-          ),
-        ),
-      ),
+                        );
+                      },
+                      separatorBuilder: (context, index) =>
+                          Divider(
+                            color: Colors.black,
+                          ),
+                      itemCount: c.acquisti.length),
+                )
+              ],
+            ),
+          )),
     );
   }
 }

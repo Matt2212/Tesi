@@ -28,14 +28,25 @@ class LoginEvent {
   LoginEvent(this.nome);
 }
 
+class AddAcquisto extends LoginEvent {
+  AddAcquisto(String nome, this._acquisto) : super(nome) {
+    _acquisto.data = DateTime.now();
+  }
+
+  Acquisto _acquisto;
+}
+
 class ClientBloc extends Bloc<LoginEvent, ClientState> {
   ClientBloc() : super(UnLoggedState());
 
   @override
   Stream<ClientState> mapEventToState(LoginEvent event) async* {
-    if (event is LoginEvent) {
-        ClientState user = await _login(event.nome);
-        yield user;
+    if (event is AddAcquisto) {
+      state.c.acquisti.add(event._acquisto);
+      yield state;
+    } else if (event is LoginEvent) {
+      ClientState user = await _login(event.nome);
+      yield user;
     }
   }
 
