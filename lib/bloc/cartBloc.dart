@@ -54,6 +54,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     if (event is GetCart) {
       var url = Uri.http('192.168.0.9:8080', '/cart');
       state.a = Acquisto.fromJson(json.decode((await http.get(url)).body));
+      print(state.a.toJson());
       yield CartState(state.a, event);
     } else if (event is SaveCart) {
       await saveCart();

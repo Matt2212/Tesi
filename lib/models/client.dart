@@ -24,13 +24,13 @@ class Cliente {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'nome': nome,
-    'cognome': cognome,
-    'email': email,
-    'userName': username,
-    'recapito': recapito,
-  };
+        'id': id,
+        'nome': nome,
+        'cognome': cognome,
+        'email': email,
+        'userName': username,
+        'recapito': recapito,
+      };
 }
 
 class Acquisto {
@@ -115,17 +115,18 @@ class LoginPage extends StatelessWidget {
                   }),
             ),
             const Padding(padding: EdgeInsets.all(1)),
-            RaisedButton(
-                child: const Text('Login'),
-                onPressed: () {
-                  BlocProvider.of<ClientBloc>(context)
-                      .add(LoginEvent(textEditingController.text));
-                  BlocProvider.of<ClientBloc>(context).listen((c) {
-                    if (c is LoggedState) {
-                      context.bloc<CartBloc>().add(MergeCart(c.c.username));
-                    }
-                  });
-                }),
+            BlocListener<ClientBloc, ClientState>(
+              listener: (context, state) {
+                if (state is LoggedState)
+                  context.bloc<CartBloc>().add(MergeCart(state.c.username));
+              },
+              child: RaisedButton(
+                  child: const Text('Login'),
+                  onPressed: () {
+                    BlocProvider.of<ClientBloc>(context)
+                        .add(LoginEvent(textEditingController.text));
+                  }),
+            ),
           ],
         ),
       ),

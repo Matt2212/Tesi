@@ -13,8 +13,9 @@ class UserPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(c.username),
       ),
-      body: Padding(
-          padding: EdgeInsets.all(15),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -47,7 +48,7 @@ class UserPage extends StatelessWidget {
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     Acquisto a = c.acquisti[index];
-                    return a.data == null
+                    return (a.data == null)
                         ? Container()
                         : ExpansionTile(
                             title: Text(
@@ -56,34 +57,36 @@ class UserPage extends StatelessWidget {
                                 sprintf('Prezzo: %1.2f €', [a.prezzoTotale])
                                     .toString()),
                             children: [
-                              ListView.separated(
-                                shrinkWrap: true,
-                                separatorBuilder: (context, index) => Divider(
-                                  color: Colors.black,
+                              Container(
+                                child: ListView.separated(
+                                  shrinkWrap: true,
+                                  separatorBuilder: (context, index) => Divider(
+                                    color: Colors.black,
+                                  ),
+                                  itemCount: c.acquisti.length,
+                                  itemBuilder: (context, index) {
+                                    DettaglioPrenotazione dp =
+                                        a.prenotazioni[index];
+                                    return ListTile(
+                                      title: Text(sprintf(
+                                          'Destinazione: %s\nPosti prenotati: %d\nPrezo totale %1.2f\nData partenza: %s'
+                                          '\nGiorni Permanenza: %s\n',
+                                          [
+                                            dp.pacchettoVacanza.pacchetto
+                                                .localita,
+                                            dp.postiPrenotati,
+                                            dp.pacchettoVacanza.prezzo *
+                                                dp.postiPrenotati,
+                                            DateFormat('d/M/yyyy, HH:mm')
+                                                .format(dp.pacchettoVacanza
+                                                    .pacchetto.dataPartenza),
+                                            dp.pacchettoVacanza.giorniPermanenza
+                                          ]).toString()),
+                                      subtitle:
+                                          Text(dp.pacchettoVacanza.descrizione),
+                                    );
+                                  },
                                 ),
-                                itemCount: c.acquisti.length,
-                                itemBuilder: (context, index) {
-                                  DettaglioPrenotazione dp =
-                                      a.prenotazioni[index];
-                                  return ListTile(
-                                    title: Text(sprintf(
-                                        'Destinazione: %s\nPosti prenotati: %d\nPrezo totale %1.2f\nData partenza: %s'
-                                        '\nGiorni Permanenza: %s\n',
-                                        [
-                                          dp.pacchettoVacanza.pacchetto
-                                              .localita,
-                                          dp.postiPrenotati,
-                                          dp.pacchettoVacanza.prezzo *
-                                              dp.postiPrenotati,
-                                          DateFormat('d/M/yyyy, HH:mm').format(
-                                              dp.pacchettoVacanza.pacchetto
-                                                  .dataPartenza),
-                                          dp.pacchettoVacanza.giorniPermanenza
-                                        ]).toString()),
-                                    subtitle:
-                                        Text(dp.pacchettoVacanza.descrizione),
-                                  );
-                                },
                               ),
                             ],
                           );
@@ -93,7 +96,9 @@ class UserPage extends StatelessWidget {
                       ),
                   itemCount: c.acquisti.length)
             ],
-          )),
+          ),
+        ),
+      ),
     );
   }
 }

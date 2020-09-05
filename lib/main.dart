@@ -19,6 +19,7 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<CartBloc>(
           create: (_) => CartBloc()..add(GetCart()),
+          lazy: false,
         ),
       ],
       child: MaterialApp(
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
         ),
         initialRoute: '/',
         onGenerateRoute: RouteGenerator.generateRoute,
+
       ),
     );
   }

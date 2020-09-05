@@ -118,16 +118,18 @@ class CartPage extends StatelessWidget {
                                         : 'Qualcosa è andato storto, non è stato possibile effettuare l\'acquisto')));
                               },
                               child: BlocBuilder<ClientBloc, ClientState>(
-                                buildWhen: (previous, next) =>
-                                    previous is LoggedState,
-                                builder: (contextz, state) => RaisedButton(
-                                  onPressed: () {
-                                    context.bloc<CartBloc>().add(BuyCart());
-                                  },
-                                  child: Text('Acquista'),
-                                  color: Colors.deepOrange,
-                                ),
-                              ),
+                                  builder: (contextz, state) =>
+                                      (state is LoggedState)
+                                          ? RaisedButton(
+                                              onPressed: () {
+                                                context
+                                                    .bloc<CartBloc>()
+                                                    .add(BuyCart());
+                                              },
+                                              child: Text('Acquista'),
+                                              color: Colors.deepOrange,
+                                            )
+                                          : Container()),
                             )
                           ],
                         ),
