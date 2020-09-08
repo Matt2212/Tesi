@@ -27,7 +27,7 @@ class Localita {
 }
 
 class CatalogProvider {
-  final String url = 'http://192.168.0.9:8080/localita';
+  final String url = 'http://agenziaviaggi.ddns.net/localita';
 
   Future<dynamic> localita() async {
     Response r = await http.get(url);
