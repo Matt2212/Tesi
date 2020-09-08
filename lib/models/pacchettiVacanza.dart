@@ -79,7 +79,8 @@ class PacchettoVacanzaProvider {
   var url;
 
   PacchettoVacanzaProvider(String name) {
-    url = Uri.http('192.168.0.9:8080', '/localita/pacchetti', {'l': name});
+    url =
+        Uri.http('agenziaviaggi.ddns.net', '/localita/pacchetti', {'l': name});
   }
 
   Future<dynamic> pacchetti() async {

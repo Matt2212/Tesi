@@ -25,7 +25,6 @@ class RecensioneBloc extends Bloc<RecensioneEvent, RecensioneState> {
         state.recensioni.insert(0, event.r);
         yield RecensioneState(state.localita, true)
           ..recensioni = List<dynamic>.from(state.recensioni);
-        ;
       }
     }
   }
