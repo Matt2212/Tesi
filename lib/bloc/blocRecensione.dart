@@ -31,7 +31,7 @@ class RecensioneBloc extends Bloc<RecensioneEvent, RecensioneState> {
   }
 
   Future<Response> addRec(Recensione r) async {
-    var url = Uri.http('192.168.0.9:8080', '/review');
+    var url = Uri.http('agenziaviaggi.ddns.net', '/review');
     var post = await http.post(url,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',

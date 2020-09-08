@@ -49,14 +49,13 @@ class ClientBloc extends Bloc<UserEvent, ClientState> {
       yield state;
     }
     if (event is LoginEvent) {
-      ClientState user = await _login(event.nome, event.password);
-      yield user;
+      yield await _login(event.nome, event.password);
     }
   }
 
   Future<ClientState> _login(String nome, String password) async {
-    var url = Uri.http(
-        '192.168.0.9:8080', '/user', {'user': nome, 'password': password});
+    var url = Uri.http('agenziaviaggi.ddns.net/', '/user',
+        {'user': nome, 'password': password});
     Response response = await http.get(url);
     if (response.statusCode >= 400) {
       return (state as UnLoggedState)..error = true;

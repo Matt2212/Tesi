@@ -55,14 +55,14 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   @override
   Stream<CartState> mapEventToState(CartEvent event) async* {
     if (event is GetCart) {
-      var url = Uri.http('192.168.0.9:8080', '/cart');
+      var url = Uri.http('agenziaviaggi.ddns.net', '/cart');
       state.a = Acquisto.fromJson(json.decode((await http.get(url)).body));
       yield CartState(state.a);
     } else if (event is SaveCart) {
       await saveCart();
       yield CartState(state.a);
     } else if (event is BuyCart) {
-      var url = Uri.http('192.168.0.9:8080', 'cart/acquisto');
+      var url = Uri.http('agenziaviaggi.ddns.net', 'cart/acquisto');
       Response r = await http.put(
         url,
         body: json.encode(state.a.toJson()),
@@ -98,8 +98,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       await saveCart();
       yield CartState(state.a);
     } else if (event is MergeCart) {
-      var url =
-          Uri.http('192.168.0.9:8080', '/cart/${state.a.id}/${event.username}');
+      var url = Uri.http(
+          'agenziaviaggi.ddns.net', '/cart/${state.a.id}/${event.username}');
       var body2 = (await http.put(url)).body;
       state.a = Acquisto.fromJson(json.decode(body2));
       yield CartState(state.a);
@@ -117,7 +117,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   }
 
   Future<void> saveCart() async {
-    var url = Uri.http('192.168.0.9:8080', '/cart/save');
+    var url = Uri.http('agenziaviaggi.ddns.net', '/cart/save');
     await http.put(
       url,
       body: json.encode(state.a),
