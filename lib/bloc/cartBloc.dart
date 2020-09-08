@@ -10,9 +10,8 @@ import 'clientBloc.dart';
 
 class CartState {
   Acquisto a;
-  CartEvent lastEvent;
 
-  CartState([this.a, this.lastEvent]);
+  CartState([this.a]);
 }
 
 abstract class CartEvent {}
@@ -58,10 +57,10 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     if (event is GetCart) {
       var url = Uri.http('192.168.0.9:8080', '/cart');
       state.a = Acquisto.fromJson(json.decode((await http.get(url)).body));
-      yield CartState(state.a, event);
+      yield CartState(state.a);
     } else if (event is SaveCart) {
       await saveCart();
-      yield CartState(state.a, event);
+      yield CartState(state.a);
     } else if (event is BuyCart) {
       var url = Uri.http('192.168.0.9:8080', 'cart/acquisto');
       Response r = await http.put(
@@ -75,7 +74,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         yield CartState(state.a);
       else {
         clientBloc.add(AddAcquisto(state.a));
-        yield CartState(Acquisto.fromJson(json.decode(r.body)), event);
+        yield CartState(Acquisto.fromJson(json.decode(r.body)));
       }
     } else if (event is PutCart) {
       PacchettoVacanza pv = event.pv;
@@ -97,23 +96,23 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         state.a.prezzoTotale += event.posti * pv.prezzo;
       }
       await saveCart();
-      yield CartState(state.a, event);
+      yield CartState(state.a);
     } else if (event is MergeCart) {
       var url =
           Uri.http('192.168.0.9:8080', '/cart/${state.a.id}/${event.username}');
       var body2 = (await http.put(url)).body;
       state.a = Acquisto.fromJson(json.decode(body2));
-      yield CartState(state.a, event);
+      yield CartState(state.a);
     } else if (event is RemoveCart) {
       Acquisto cart = state.a..prenotazioni.removeAt(event.index);
       await saveCart();
-      yield CartState(cart, event);
+      yield CartState(cart);
     } else if (event is SetDettaglio) {
       DettaglioPrenotazione dp = state.a.prenotazioni[event.index];
       dp.postiPrenotati = event.posti;
       state.a.prezzoTotale = event.posti * dp.pacchettoVacanza.prezzo;
       saveCart();
-      yield CartState(state.a, event);
+      yield CartState(state.a);
     }
   }
 

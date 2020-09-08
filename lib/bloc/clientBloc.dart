@@ -11,6 +11,7 @@ abstract class ClientState {
 
 class UnLoggedState extends ClientState {
   bool error = false;
+
   UnLoggedState() {
     c = Cliente(0, 'Guest', 'Guest', "guest");
   }
@@ -44,7 +45,7 @@ class ClientBloc extends Bloc<UserEvent, ClientState> {
   @override
   Stream<ClientState> mapEventToState(UserEvent event) async* {
     if (event is AddAcquisto) {
-      state.c.acquisti.add(event._acquisto);
+      state.c.acquisti.insert(0, event._acquisto);
       yield state;
     }
     if (event is LoginEvent) {
@@ -58,11 +59,14 @@ class ClientBloc extends Bloc<UserEvent, ClientState> {
         '192.168.0.9:8080', '/user', {'user': nome, 'password': password});
     Response response = await http.get(url);
     if (response.statusCode >= 400) {
-      return (state as UnLoggedState)
-        ..error = true;
+      return (state as UnLoggedState)..error = true;
     }
     Cliente c = Cliente.fromJson(json.decode(response.body));
+    c.acquisti.sort((a1, a2) => a1.data == null
+        ? 1
+        : a2.data == null
+            ? -1
+            : a2.data.millisecondsSinceEpoch - a1.data.millisecondsSinceEpoch);
     return LoggedState(c);
   }
-
 }
