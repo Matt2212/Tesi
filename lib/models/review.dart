@@ -95,13 +95,13 @@ class RecensioneWD extends StatefulWidget {
 class _RecensioneWDState extends State<RecensioneWD> {
   final TextEditingController textEditingController = TextEditingController();
 
-  RecensioneBloc recensioneBloc;
+  ReiewBloc recensioneBloc;
   Localita localita;
 
   int _counter = 1;
 
   _RecensioneWDState(this.localita) {
-    recensioneBloc = RecensioneBloc(localita.nome);
+    recensioneBloc = ReiewBloc(localita.nome);
     recensioneBloc.add(SearchEvent(localita.nome));
   }
 
@@ -153,31 +153,33 @@ class _RecensioneWDState extends State<RecensioneWD> {
               ),
               padding: EdgeInsets.all(10),
             ),
-            RaisedButton(
-              color: Colors.deepOrange,
-              textColor: Colors.white,
-              disabledColor: Colors.grey,
-              disabledTextColor: Colors.black,
-              padding: EdgeInsets.all(8.0),
-              onPressed: () async {
-                context.bloc<ClientBloc>();
-                Recensione r = Recensione(
-                    localita.nome,
-                    _counter,
-                    textEditingController.text,
-                    context.bloc<ClientBloc>().state.c);
-                recensioneBloc.add(AddEvent(r));
-                recensioneBloc.listen((state) {
-                  String result = state.added
-                      ? 'Commento aggiunto correttamente'
-                      : 'Commento non aggiunto';
-                  Scaffold.of(context)
-                      .showSnackBar(SnackBar(content: Text(result)));
-                });
+            BlocListener<ReiewBloc, ReiewState>(
+              listenWhen: (preious, current) => current.added != null,
+              listener: (context, state) {
+                String result = state.added
+                    ? 'Commento aggiunto correttamente'
+                    : 'Commento non aggiunto';
+                Scaffold.of(context)
+                    .showSnackBar(SnackBar(content: Text(result)));
               },
-              child: Text(
-                "Invia",
-                style: TextStyle(fontSize: 20.0),
+              child: RaisedButton(
+                color: Colors.deepOrange,
+                textColor: Colors.white,
+                disabledColor: Colors.grey,
+                disabledTextColor: Colors.black,
+                padding: EdgeInsets.all(8.0),
+                onPressed: () async {
+                  Recensione r = Recensione(
+                      localita.nome,
+                      _counter,
+                      textEditingController.text,
+                      context.bloc<ClientBloc>().state.c);
+                  recensioneBloc.add(AddEvent(r));
+                },
+                child: Text(
+                  "Invia",
+                  style: TextStyle(fontSize: 20.0),
+                ),
               ),
             )
           ] else
@@ -187,7 +189,8 @@ class _RecensioneWDState extends State<RecensioneWD> {
               maxHeight: 300.0,
               minHeight: 100.0,
             ),
-            child: BlocBuilder<RecensioneBloc, RecensioneState>(
+            child:
+            BlocBuilder<ReiewBloc, ReiewState>(
               builder: (BuildContext context, state) =>
                   SafeArea(
                     child: ListView.separated(

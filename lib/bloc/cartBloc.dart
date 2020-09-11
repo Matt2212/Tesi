@@ -10,8 +10,9 @@ import 'clientBloc.dart';
 
 class CartState {
   Acquisto a;
+  bool bougth;
 
-  CartState([this.a]);
+  CartState([this.a, this.bougth = false]);
 }
 
 abstract class CartEvent {}
@@ -71,10 +72,10 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         },
       );
       if (r.statusCode >= 400)
-        yield CartState(state.a);
+        yield CartState(state.a, true);
       else {
         clientBloc.add(AddAcquisto(state.a));
-        yield CartState(Acquisto.fromJson(json.decode(r.body)));
+        yield CartState(Acquisto.fromJson(json.decode(r.body)), true);
       }
     } else if (event is PutCart) {
       PacchettoVacanza pv = event.pv;
@@ -104,9 +105,12 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       state.a = Acquisto.fromJson(json.decode(body2));
       yield CartState(state.a);
     } else if (event is RemoveCart) {
-      Acquisto cart = state.a..prenotazioni.removeAt(event.index);
+      Acquisto cart = state.a;
+      cart.prezzoTotale -= cart.prenotazioni[event.index].postiPrenotati *
+          cart.prenotazioni[event.index].pacchettoVacanza.prezzo;
+      cart.prenotazioni.removeAt(event.index);
       await saveCart();
-      yield CartState(cart);
+      yield CartState(state.a);
     } else if (event is SetDettaglio) {
       DettaglioPrenotazione dp = state.a.prenotazioni[event.index];
       dp.postiPrenotati = event.posti;

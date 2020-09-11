@@ -54,7 +54,7 @@ class ClientBloc extends Bloc<UserEvent, ClientState> {
   }
 
   Future<ClientState> _login(String nome, String password) async {
-    var url = Uri.http('agenziaviaggi.ddns.net/', '/user',
+    var url = Uri.http('agenziaviaggi.ddns.net', '/user',
         {'user': nome, 'password': password});
     Response response = await http.get(url);
     if (response.statusCode >= 400) {

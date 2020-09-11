@@ -5,25 +5,23 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 
-class RecensioneBloc extends Bloc<RecensioneEvent, RecensioneState> {
-  RecensioneBloc(String localita) : super(RecensioneState(localita));
+class ReiewBloc extends Bloc<ReviewEvent, ReiewState> {
+  ReiewBloc(String localita) : super(ReiewState(localita));
   RecensioneProvider _provider = RecensioneProvider();
 
   @override
-  Stream<RecensioneState> mapEventToState(RecensioneEvent event) async* {
-    final currentState = state;
+  Stream<ReiewState> mapEventToState(ReviewEvent event) async* {
     if (event is SearchEvent) {
-      SearchEvent search = event;
       List<dynamic> r = (await _provider.search(event.localita));
       yield state..recensioni = r;
     } else if (event is AddEvent) {
       Response response = await addRec(event.r);
       if (response.statusCode >= 400) {
-        yield RecensioneState(state.localita, false)
+        yield ReiewState(state.localita, false)
           ..recensioni = List<dynamic>.from(state.recensioni);
       } else {
         state.recensioni.insert(0, event.r);
-        yield RecensioneState(state.localita, true)
+        yield ReiewState(state.localita, true)
           ..recensioni = List<dynamic>.from(state.recensioni);
       }
     }
@@ -40,23 +38,23 @@ class RecensioneBloc extends Bloc<RecensioneEvent, RecensioneState> {
   }
 }
 
-class RecensioneState {
+class ReiewState {
   List<dynamic> recensioni = [];
   String localita;
   bool added = false;
 
-  RecensioneState(this.localita, [this.added]);
+  ReiewState(this.localita, [this.added]);
 }
 
-abstract class RecensioneEvent {}
+abstract class ReviewEvent {}
 
-class SearchEvent extends RecensioneEvent {
+class SearchEvent extends ReviewEvent {
   String localita;
 
   SearchEvent(this.localita);
 }
 
-class AddEvent extends RecensioneEvent {
+class AddEvent extends ReviewEvent {
   Recensione r;
 
   AddEvent(this.r);

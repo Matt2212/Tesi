@@ -111,6 +111,7 @@ class CartPage extends StatelessWidget {
                               ),
                             ),
                             BlocListener<CartBloc, CartState>(
+                              listenWhen: (previous, current) => current.bougth,
                               listener: (context, state) {
                                 Scaffold.of(that).showSnackBar(SnackBar(
                                     content: Text((state.a.prenotazioni.isEmpty)
